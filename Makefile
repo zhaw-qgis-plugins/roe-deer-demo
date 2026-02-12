@@ -5,7 +5,7 @@ REPO_DIR    = ../QGIS-Plugin-Repository
 
 publish: zip
 	cp $(PLUGIN_NAME).zip $(REPO_DIR)/plugins/
-	python $(REPO_DIR)/generate_xml.py
+	python $(REPO_DIR)/generate_xml.py --base-url https://zhaw-qgis-plugins.github.io/Plugins-Repository/plugins
 
 zip: clean
 	zip -r $(PLUGIN_NAME).zip $(PLUGIN_NAME)/
