@@ -20,7 +20,7 @@ from qgis.core import (QgsProcessing,
                        QgsWkbTypes,
                        QgsProcessingException)
 import numpy as np
-import rasterio
+from osgeo import gdal
 from skimage.graph import MCP_Geometric
 
 class RoeDeerDemo(QgsProcessingAlgorithm):
@@ -76,20 +76,18 @@ class RoeDeerDemo(QgsProcessingAlgorithm):
         raster_path = raster_layer.source()
         feedback.pushInfo(f"Reading: {raster_path}")
         
-        with rasterio.open(raster_path) as src:
-            # Load as float32 to handle Infinite costs
-            data = src.read(1).astype('float32')
-            r_transform = src.transform
-            nodata = src.nodata
-            
-            # Get Start Index
-            r_start, c_start = src.index(start_pt.x(), start_pt.y())
-            
-            # Geometry Helpers
-            x_origin = r_transform[2]
-            y_origin = r_transform[5]
-            px_w = r_transform[0]
-            px_h = r_transform[4]
+        ds = gdal.Open(raster_path)
+        band = ds.GetRasterBand(1)
+        data = band.ReadAsArray().astype('float32')
+        nodata = band.GetNoDataValue()
+        gt = ds.GetGeoTransform()
+        x_origin = gt[0]
+        px_w = gt[1]
+        y_origin = gt[3]
+        px_h = gt[5]
+        c_start = int((start_pt.x() - x_origin) / px_w)
+        r_start = int((start_pt.y() - y_origin) / px_h)
+        ds = None  # close dataset
 
         # 4. Validate Start Point
         if not (0 <= r_start < data.shape[0] and 0 <= c_start < data.shape[1]):
