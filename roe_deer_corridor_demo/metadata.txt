@@ -2,7 +2,7 @@
 name=Roe Deer Corridor Demo
 description=Calculates least-cost paths for roe deer corridor analysis.
 about=Demo plugin that generates least-cost paths from a resistance surface and shows reachable vs unreachable endpoints.
-version=0.3.0
+version=0.4.0
 author=Lukas Buchmann
 qgisMinimumVersion=3.0
 experimental=False
